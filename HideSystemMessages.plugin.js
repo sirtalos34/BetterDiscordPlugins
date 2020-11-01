@@ -1,7 +1,7 @@
 /**
  * @name HideSystemMessages
  * @authorId 433027692372426753
- * @website https://github.com/sirtalos34/BetterDiscordPlugins/HideSystemMessages
+ * @website https://github.com/sirtalos34/BetterDiscordPlugins/HideSystemMessages.plugin.js
  * @source https://raw.githubusercontent.com/sirtalos34/BetterDiscordPlugins/main/HideSystemMessages.plugin.js
  */
 
@@ -17,9 +17,9 @@ module.exports = (() =>
 				discord_id: '433027692372426753',
 				github_username: 'sirtalos34'
 			}],
-			version: '1.0.0',
+			version: '1.0.1',
 			description: 'Adds the ability to hide system messages',
-			github: 'https://github.com/sirtalos34/BetterDiscordPlugins/HideSystemMessages',
+			github: 'https://github.com/sirtalos34/BetterDiscordPlugins/HideSystemMessages.plugin.js',
 			github_raw: 'https://raw.githubusercontent.com/sirtalos34/BetterDiscordPlugins/main/HideSystemMessages.plugin.js'
 		}
 	};
