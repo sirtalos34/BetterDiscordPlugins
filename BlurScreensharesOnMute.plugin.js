@@ -17,8 +17,8 @@ module.exports = (() =>
 				discord_id: '433027692372426753',
 				github_username: 'sirtalos34'
 			}],
-			version: '1.0.4',
-			description: 'Blurs all sceenshares when you mute yourself',
+			version: '1.0.5',
+			description: 'Blurs all sceenshares and cameras when you mute yourself',
 			github: 'https://github.com/sirtalos34/BetterDiscordPlugins/blob/main/BlurScreensharesOnMute.plugin.js',
 			github_raw: 'https://raw.githubusercontent.com/sirtalos34/BetterDiscordPlugins/main/BlurScreensharesOnMute.plugin.js'
 		}
@@ -81,7 +81,7 @@ module.exports = (() =>
                     {
                         if(m[0].attributeName !== 'aria-checked') return;
                         const muted = (m[0].target.attributes['aria-checked'].nodeValue == 'true');
-                        const css = `.media-engine-video.video-1kutKI.videoContain-2ih_gc.content-2Sfaij. { filter: blur(${this.settings.blur}px); } .pictureInPictureVideo-2iKsGg.idle-70Gg3H { filter: blur(${this.settings.blur}px); }`;
+                        const css = `.videoWrapper-2v09vt, .pictureInPictureWindow-1B5qS, .pictureInPictureWindow-1B5qSe { filter: blur(${this.settings.blur}px); } }`;
                         muted ? Api.PluginUtilities.addStyle(config.info.name, css) : Api.PluginUtilities.removeStyle(config.info.name);
                     });
                     this.muteObserver.observe(muteButton, { attributes: true });
