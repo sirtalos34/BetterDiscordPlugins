@@ -82,7 +82,7 @@ module.exports = (() =>
                         if(m[0].attributeName !== 'aria-checked') return;
                         const muted = (m[0].target.attributes['aria-checked'].nodeValue == 'true');
                         const css = `.media-engine-video.video-1kutKI.da-video.videoContain-2ih_gc.da-videoContain.content-2Sfaij.da-content { filter: blur(${this.settings.blur}px); } .pictureInPictureVideo-2iKsGg.da-pictureInPictureVideo.idle-70Gg3H.da-idle { filter: blur(${this.settings.blur}px); }`;
-                        muted ? Api.addStyle('muteCensor', css) : BdApi.clearCSS('muteCensor');
+                        muted ? BdApi.injectCSS('muteCensor', css) : BdApi.clearCSS('muteCensor');
                     });
                     this.muteObserver.observe(muteButton, { attributes: true });
 				}
@@ -90,7 +90,7 @@ module.exports = (() =>
 				onStop()
 				{
                     if(this.muteObserver) this.muteObserver.disconnect();
-                    Api.removeStyle('muteCensor');
+                    BdApi.clearCSS('muteCensor');
                 }
                 
                 getSettingsPanel()
