@@ -17,7 +17,7 @@ module.exports = (() =>
 				discord_id: '433027692372426753',
 				github_username: 'sirtalos34'
 			}],
-			version: '1.0.1',
+			version: '1.0.2',
 			description: 'Add sounds that play when you type!',
 			github: 'https://github.com/sirtalos34/BetterDiscordPlugins/blob/main/TypingSounds.plugin.js',
 			github_raw: 'https://raw.githubusercontent.com/sirtalos34/BetterDiscordPlugins/main/TypingSounds.plugin.js'
@@ -112,7 +112,7 @@ module.exports = (() =>
                             name: 'General',
                             shown: true,
                             settings: {
-                                help: { type: 'Switch', name: 'Click me for help', tooltip: null, exec: () => { BdApi.showConfirmationModal('README', 'To add your own typing sounds:\nMove any type of audio file into \'plugins/typingSounds\'.\nIf there are multiple audio files in the directory it will randomly select which to play'); } },
+                                help: { type: 'Switch', name: 'Click me for help', tooltip: null, exec: () => { Api.Modals.showChangelogModal(config.info.name, config.info.version, config.changelog); } },
                                 volume: { type: 'Slider', min: 1, max: 9, name: 'Volume', tooltip: null, exec: e => {}, options: { markers: Array.from({ length: 9 }, (_, i) => i + 1), stickToMarkers: true } }
                             }
                         }
