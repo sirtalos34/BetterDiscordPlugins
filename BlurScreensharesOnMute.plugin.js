@@ -90,7 +90,7 @@ module.exports = (() =>
 				onStop()
 				{
                     if(this.muteObserver) this.muteObserver.disconnect();
-                    Api.PluginUtilities.addStyle(config.info.name);
+                    Api.PluginUtilities.removeStyle(config.info.name);
                 }
                 
                 getSettingsPanel()
