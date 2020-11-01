@@ -1,7 +1,7 @@
 /**
  * @name BlurScreensharesOnMute
  * @authorId 433027692372426753
- * @website https://github.com/sirtalos34/BetterDiscordPlugins/BlurScreensharesOnMute.plugin.js
+ * @website https://github.com/sirtalos34/BetterDiscordPlugins/blob/main/BlurScreensharesOnMute.plugin.js
  * @source https://raw.githubusercontent.com/sirtalos34/BetterDiscordPlugins/main/BlurScreensharesOnMute.plugin.js
  */
 
@@ -17,9 +17,9 @@ module.exports = (() =>
 				discord_id: '433027692372426753',
 				github_username: 'sirtalos34'
 			}],
-			version: '1.0.3',
+			version: '1.0.4',
 			description: 'Blurs all sceenshares when you mute yourself',
-			github: 'https://github.com/sirtalos34/BetterDiscordPlugins/BlurScreensharesOnMute.plugin.js',
+			github: 'https://github.com/sirtalos34/BetterDiscordPlugins/blob/main/BlurScreensharesOnMute.plugin.js',
 			github_raw: 'https://raw.githubusercontent.com/sirtalos34/BetterDiscordPlugins/main/BlurScreensharesOnMute.plugin.js'
 		}
 	};
