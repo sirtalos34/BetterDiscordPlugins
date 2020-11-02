@@ -24,7 +24,7 @@ module.exports = (() =>
 		}
 	};
 
-    return !global.ZeresPluginLibrary ? class
+	return !global.ZeresPluginLibrary ? class
 	{
 		constructor() { this._config = config; }
 
@@ -57,18 +57,18 @@ module.exports = (() =>
 			return class HideSystemMessages extends Plugin 
 			{
 				constructor() {
-                    super();
-                    this.save = (m, e) => typeof this.settings[m] !== 'undefined' ? this.settings[m] = e : null;
+					super();
+					this.save = (m, e) => typeof this.settings[m] !== 'undefined' ? this.settings[m] = e : null;
 					this.defaultSettings = {
 						hiddenMessages: {},
 						hiddenChannels: {}, /* Todo: Add ability to hide all system messages in certain channels */
 						hideAll: false
 					};
-                }
+				}
 
 				onStart()
 				{
-                    /* Wait for user to be logged in */
+					/* Wait for user to be logged in */
 					const interval = setInterval(() => {
 						if(Api.DiscordAPI.currentUser === null) return;
 						clearInterval(interval);
@@ -159,43 +159,43 @@ module.exports = (() =>
 				}
 
 				getSettingsPanel()
-                {
-                    const { Settings } = Api;
-                    const set = {
-                        generalSettings: {
-                            name: 'General',
-                            shown: true,
-                            settings: {
-                                hideAll: { type: 'Switch', name: 'Hide all', tooltip: 'Hide all system messages in every channel', exec: () => { this.reloadAllMessages(); } }
-                            }
-                        }
-                    }
+				{
+					const { Settings } = Api;
+					const set = {
+						generalSettings: {
+							name: 'General',
+							shown: true,
+							settings: {
+								hideAll: { type: 'Switch', name: 'Hide all', tooltip: 'Hide all system messages in every channel', exec: () => { this.reloadAllMessages(); } }
+							}
+						}
+					}
 
-                    return Settings.SettingPanel.build(this.saveSettings.bind(this),
-                        ...Object.values(set).map(group => {
-                            return new Settings.SettingGroup(group.name, { shown: group.shown || false }).append(
-                                ...Object.keys(group.settings).map(name => {
-                                    const i = group.settings[name];
-                                    let obj;
-                                    const exec = (e) => { this.save(name, e); i.exec(); };
-                                    switch(i.type) {
-                                        case 'Switch':
-                                            obj = new Settings.Switch(i.name, null, this.settings[name], exec, i.options || {});
-                                            break;
-                                        case 'Slider':
-                                            obj = new Settings.Slider(i.name, null, i.min, i.max, this.settings[name], exec, i.options || {});
-                                            break;
-                                        case 'Textbox':
-                                            obj = new Settings.Textbox(i.name, null, this.settings[name], exec, i.options || {});
-                                            break;
-                                    }
-                                    if(i.tooltip !== null) new Api.EmulatedTooltip(obj.inputWrapper, i.tooltip, { side: 'left' });
-                                    return obj;
-                                })
-                            );
-                        })
-                    );
-                }
+					return Settings.SettingPanel.build(this.saveSettings.bind(this),
+						...Object.values(set).map(group => {
+							return new Settings.SettingGroup(group.name, { shown: group.shown || false }).append(
+								...Object.keys(group.settings).map(name => {
+									const i = group.settings[name];
+									let obj;
+									const exec = (e) => { this.save(name, e); i.exec(); };
+									switch(i.type) {
+										case 'Switch':
+											obj = new Settings.Switch(i.name, null, this.settings[name], exec, i.options || {});
+											break;
+										case 'Slider':
+											obj = new Settings.Slider(i.name, null, i.min, i.max, this.settings[name], exec, i.options || {});
+											break;
+										case 'Textbox':
+											obj = new Settings.Textbox(i.name, null, this.settings[name], exec, i.options || {});
+											break;
+									}
+									if(i.tooltip !== null) new Api.EmulatedTooltip(obj.inputWrapper, i.tooltip, { side: 'left' });
+									return obj;
+								})
+							);
+						})
+					);
+				}
 			};
 		}
 

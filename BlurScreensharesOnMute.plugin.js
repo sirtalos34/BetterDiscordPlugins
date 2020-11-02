@@ -57,16 +57,16 @@ module.exports = (() =>
 			return class BlurScreensharesOnMute extends Plugin 
 			{
 				constructor() {
-                    super();
-                    this.save = (m, e) => typeof this.settings[m] !== 'undefined' ? this.settings[m] = e : null;
+					super();
+					this.save = (m, e) => typeof this.settings[m] !== 'undefined' ? this.settings[m] = e : null;
 					this.defaultSettings = {
-                        blur: 35
+						blur: 35
 					};
-                }
+				}
 
 				onStart()
 				{
-                    /* Wait for user to be logged in */
+					/* Wait for user to be logged in */
 					const interval = setInterval(() => {
 						if(Api.DiscordAPI.currentUser === null) return;
 						clearInterval(interval);
@@ -75,62 +75,62 @@ module.exports = (() =>
 				}
 
 				async onLogin()
-                {
-                    const muteButton = document.querySelector('*[aria-label="Mute"]');
-                    this.muteObserver = new MutationObserver(m =>
-                    {
-                        if(m[0].attributeName !== 'aria-checked') return;
-                        const muted = (m[0].target.attributes['aria-checked'].nodeValue == 'true');
-                        const css = `.videoWrapper-2v09vt, .pictureInPictureWindow-1B5qS, .pictureInPictureWindow-1B5qSe { filter: blur(${this.settings.blur}px); } }`;
-                        muted ? Api.PluginUtilities.addStyle(config.info.name, css) : Api.PluginUtilities.removeStyle(config.info.name);
-                    });
-                    this.muteObserver.observe(muteButton, { attributes: true });
+				{
+					const muteButton = document.querySelector('*[aria-label="Mute"]');
+					this.muteObserver = new MutationObserver(m =>
+					{
+						if(m[0].attributeName !== 'aria-checked') return;
+						const muted = (m[0].target.attributes['aria-checked'].nodeValue == 'true');
+						const css = `.videoWrapper-2v09vt, .pictureInPictureWindow-1B5qS, .pictureInPictureWindow-1B5qSe { filter: blur(${this.settings.blur}px); } }`;
+						muted ? Api.PluginUtilities.addStyle(config.info.name, css) : Api.PluginUtilities.removeStyle(config.info.name);
+					});
+					this.muteObserver.observe(muteButton, { attributes: true });
 				}
 
 				onStop()
 				{
-                    if(this.muteObserver) this.muteObserver.disconnect();
-                    Api.PluginUtilities.removeStyle(config.info.name);
-                }
-                
-                getSettingsPanel()
-                {
-                    const { Settings } = Api;
-                    const set = {
-                        generalSettings: {
-                            name: 'General',
-                            shown: true,
-                            settings: {
-                                blur: { type: 'Slider', min: 1, max: 100, name: 'Blur Strength', tooltip: null, exec: () => {} }
-                            }
-                        }
-                    }
+					if(this.muteObserver) this.muteObserver.disconnect();
+					Api.PluginUtilities.removeStyle(config.info.name);
+				}
 
-                    return Settings.SettingPanel.build(this.saveSettings.bind(this),
-                        ...Object.values(set).map(group => {
-                            return new Settings.SettingGroup(group.name, { shown: group.shown || false }).append(
-                                ...Object.keys(group.settings).map(name => {
-                                    const i = group.settings[name];
-                                    let obj;
-                                    const exec = (e) => { this.save(name, e); i.exec(); };
-                                    switch(i.type) {
-                                        case 'Switch':
-                                            obj = new Settings.Switch(i.name, null, this.settings[name], exec, i.options || {});
-                                            break;
-                                        case 'Slider':
-                                            obj = new Settings.Slider(i.name, null, i.min, i.max, this.settings[name], exec, i.options || {});
-                                            break;
-                                        case 'Textbox':
-                                            obj = new Settings.Textbox(i.name, null, this.settings[name], exec, i.options || {});
-                                            break;
-                                    }
-                                    if(i.tooltip !== null) new Api.EmulatedTooltip(obj.inputWrapper, i.tooltip, { side: 'left' });
-                                    return obj;
-                                })
-                            );
-                        })
-                    );
-                }
+				getSettingsPanel()
+				{
+					const { Settings } = Api;
+					const set = {
+						generalSettings: {
+							name: 'General',
+							shown: true,
+							settings: {
+								blur: { type: 'Slider', min: 1, max: 100, name: 'Blur Strength', tooltip: null, exec: () => {} }
+							}
+						}
+					}
+
+					return Settings.SettingPanel.build(this.saveSettings.bind(this),
+						...Object.values(set).map(group => {
+							return new Settings.SettingGroup(group.name, { shown: group.shown || false }).append(
+								...Object.keys(group.settings).map(name => {
+									const i = group.settings[name];
+									let obj;
+									const exec = (e) => { this.save(name, e); i.exec(); };
+									switch(i.type) {
+										case 'Switch':
+											obj = new Settings.Switch(i.name, null, this.settings[name], exec, i.options || {});
+											break;
+										case 'Slider':
+											obj = new Settings.Slider(i.name, null, i.min, i.max, this.settings[name], exec, i.options || {});
+											break;
+										case 'Textbox':
+											obj = new Settings.Textbox(i.name, null, this.settings[name], exec, i.options || {});
+											break;
+									}
+									if(i.tooltip !== null) new Api.EmulatedTooltip(obj.inputWrapper, i.tooltip, { side: 'left' });
+									return obj;
+								})
+							);
+						})
+					);
+				}
 			};
 		}
 
