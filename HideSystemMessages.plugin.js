@@ -77,7 +77,7 @@ module.exports = (() =>
 				}
 
 				async onLogin()
-                {
+				{
 					this.patches = [];
 					this.patches.push(Api.Patcher.before(BdApi.findModuleByProps('logMessageChanges'), 'default', (_, [obj]) => {
 						const isHidden = (e) =>

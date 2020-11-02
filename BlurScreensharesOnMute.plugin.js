@@ -24,7 +24,7 @@ module.exports = (() =>
 		}
 	};
 
-    return !global.ZeresPluginLibrary ? class
+	return !global.ZeresPluginLibrary ? class
 	{
 		constructor() { this._config = config; }
 
