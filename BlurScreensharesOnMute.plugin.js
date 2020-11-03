@@ -7,7 +7,7 @@
 
 module.exports = (() =>
 {
-    const config =
+	const config =
 	{
 		info:
 		{
@@ -54,20 +54,20 @@ module.exports = (() =>
 
 		const plugin = (Plugin, Api) =>
 		{
-			return class BlurScreensharesOnMute extends Plugin 
+			return class BlurScreensharesOnMute extends Plugin
 			{
-				constructor() {
+				constructor()
+				{
 					super();
 					this.save = (m, e) => typeof this.settings[m] !== 'undefined' ? this.settings[m] = e : null;
-					this.defaultSettings = {
-						blur: 35
-					};
+					this.defaultSettings = { blur: 35 };
 				}
 
 				onStart()
 				{
 					/* Wait for user to be logged in */
-					const interval = setInterval(() => {
+					const interval = setInterval(() =>
+					{
 						if(Api.DiscordAPI.currentUser === null) return;
 						clearInterval(interval);
 						this.onLogin();
