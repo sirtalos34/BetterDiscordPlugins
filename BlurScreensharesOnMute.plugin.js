@@ -182,14 +182,6 @@ module.exports = (() =>
 					this.MutationObserver.observe(muteButton, { attributes: true });
 				}
 
-				toggleBlur(state)
-				{
-					const injected = document.getElementById(config.info.name) !== null;
-					if(injected === state) return; if(typeof state !== 'boolean') state = !injected;
-					const css = `[class*="videoWrapper"], [class*="pictureInPictureWindow"] { filter: blur(${this.settings.blur}px) }`;
-					state ? Api.PluginUtilities.addStyle(config.info.name, css) : Api.PluginUtilities.removeStyle(config.info.name);
-				}
-
 				onKeyDown(e)
 				{
 					const codes = this.settings.blurKeybind;
@@ -198,6 +190,14 @@ module.exports = (() =>
 					if(codes.includes(164) && !e.altKey) return;
 					if(codes[codes.length - 1] !== e.keyCode) return;
 					this.toggleBlur();
+				}
+
+				toggleBlur(state)
+				{
+					const injected = document.getElementById(config.info.name) !== null;
+					if(injected === state) return; if(typeof state !== 'boolean') state = !injected;
+					const css = `[class*="videoWrapper"], [class*="pictureInPictureWindow"] { filter: blur(${this.settings.blur}px) }`;
+					state ? Api.PluginUtilities.addStyle(config.info.name, css) : Api.PluginUtilities.removeStyle(config.info.name);
 				}
 			};
 		}
