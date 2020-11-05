@@ -93,7 +93,7 @@ module.exports = (() =>
 
 				async onLogin()
 				{
-					this.setupKeybind(this.settings.blurKeybind);
+					setTimeout(() => { this.setupKeybind(this.settings.blurKeybind); }, 2500);
 					if(this.settings.blurOnMute) this.createMutationObserver();
 				}
 
