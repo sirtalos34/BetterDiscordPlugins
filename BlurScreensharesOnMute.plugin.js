@@ -17,7 +17,7 @@ module.exports = (() =>
 				discord_id: '433027692372426753',
 				github_username: 'sirtalos34'
 			}],
-			version: '1.0.7',
+			version: '1.0.8',
 			description: 'Blurs all sceenshares and cameras when you mute yourself',
 			github: 'https://github.com/sirtalos34/BetterDiscordPlugins/blob/main/BlurScreensharesOnMute.plugin.js',
 			github_raw: 'https://raw.githubusercontent.com/sirtalos34/BetterDiscordPlugins/main/BlurScreensharesOnMute.plugin.js'
@@ -93,13 +93,13 @@ module.exports = (() =>
 
 				async onLogin()
 				{
-					setTimeout(() => { this.setupKeybind(this.settings.blurKeybind); }, 2500);
+					setTimeout(() => { this.setupKeybind(this.settings.blurKeybind); }, 7500);
 					if(this.settings.blurOnMute) this.createMutationObserver();
 				}
 
 				onStop()
 				{
-					try { this.globalShortcut.unregister(this.keycode); } catch(e) { Api.Logger.err('Failed to unregister global shortcut'); }
+					try { if(this.keycode) this.globalShortcut.unregister(this.keycode); } catch(e) { Api.Logger.err('Failed to unregister global shortcut'); }
 					document.body.removeEventListener('keydown', this.listener, true);
 					if(this.MutationObserver) this.MutationObserver.disconnect();
 					Api.PluginUtilities.removeStyle(config.info.name);
