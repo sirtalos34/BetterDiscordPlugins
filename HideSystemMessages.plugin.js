@@ -17,7 +17,7 @@ module.exports = (() =>
 				discord_id: '433027692372426753',
 				github_username: 'sirtalos34'
 			}],
-			version: '1.0.1',
+			version: '1.0.2',
 			description: 'Adds the ability to hide system messages',
 			github: 'https://github.com/sirtalos34/BetterDiscordPlugins/blob/main/HideSystemMessages.plugin.js',
 			github_raw: 'https://raw.githubusercontent.com/sirtalos34/BetterDiscordPlugins/main/HideSystemMessages.plugin.js'
@@ -59,11 +59,17 @@ module.exports = (() =>
 				constructor() {
 					super();
 					this.save = (m, e) => typeof this.settings[m] !== 'undefined' ? this.settings[m] = e : null;
-					this.defaultSettings = {
-						hiddenMessages: {},
-						hiddenChannels: {}, /* Todo: Add ability to hide all system messages in certain channels */
-						hideAll: false
-					};
+					this.defaultSettings = { hideAll: false };
+					this._settings = {
+						generalSettings: {
+							name: 'General',
+							collapsible: false,
+							shown: true,
+							settings: {
+								hideAll: { type: 'Switch', name: 'Hide all', tooltip: 'Hide all system messages in every channel', exec: e => { this.updateAllMessages(); } }
+							}
+						}
+					}
 				}
 
 				onStart()
@@ -78,12 +84,13 @@ module.exports = (() =>
 
 				async onLogin()
 				{
+					this.hiddenMessages = Api.PluginUtilities.loadData(config.info.name, 'hiddenMessages');
 					this.patches = [];
 					this.patches.push(Api.Patcher.before(BdApi.findModuleByProps('logMessageChanges'), 'default', (_, [obj]) => {
 						const isHidden = (e) =>
 						{	if(e.type === 3 && this.settings.hideAll) return true;
-							if(e.type === 3 && this.settings.hiddenMessages[e.channel_id]
-							&& this.settings.hiddenMessages[e.channel_id].includes(e.id)) return true;
+							if(e.type === 3 && this.hiddenMessages[e.channel_id]
+							&& this.hiddenMessages[e.channel_id].includes(e.id)) return true;
 							return false;
 						}
 						obj.messages._array = obj.messages._array.filter(e => !isHidden(e));
@@ -96,9 +103,7 @@ module.exports = (() =>
 						const newMenu = Api.DCM.buildMenuItem({
 							label: 'Hide Message',
 							danger: true,
-							action: () => {
-								this.onHide(props.channel.id, props.message.id);
-							}
+							action: () => { this.onHide(props.channel.id, props.message.id); }
 						});
 
 						if(props.message.author.id === Api.DiscordAPI.currentUser.id)
@@ -112,7 +117,7 @@ module.exports = (() =>
 							else returnValue.props.children[2].props.children = [original, newMenu];
 						}
 					}));
-					this.reloadAllMessages();
+					this.updateAllMessages();
 				}
 
 				onStop()
@@ -122,14 +127,14 @@ module.exports = (() =>
 
 				onHide(channel, message)
 				{
-					if(typeof this.settings.hiddenMessages[channel] !== 'object') /* Dont ever put a semicolon here again */
-						this.settings.hiddenMessages[channel] = [];
-					this.settings.hiddenMessages[channel].push(message);
-					this.reloadMessage(message);
-					this.saveSettings();
+					if(typeof this.hiddenMessages[channel] !== 'object') /* Dont ever put a semicolon here again */
+						this.hiddenMessages[channel] = [];
+					this.hiddenMessages[channel].push(message);
+					this.updateMessage(message);
+					Api.PluginUtilities.saveData(config.info.name, 'hiddenMessages', this.hiddenMessages);
 				}
 
-				reloadMessage(msg)
+				updateMessage(msg)
 				{
 					if(typeof msg === 'string')
 					{
@@ -145,51 +150,40 @@ module.exports = (() =>
 					});
 				}
 
-				reloadAllMessages()
+				updateAllMessages()
 				{
-					for(const channel in this.settings.hiddenMessages)
+					for(const channel in this.hiddenMessages)
 					{
-						this.settings.hiddenMessages[channel].forEach(msg => this.reloadMessage(msg));
+						this.hiddenMessages[channel].forEach(msg => this.updateMessage(msg));
 					}
 					if(!this.settings.hideAll) return;
 					const messages = BdApi.findModuleByProps('getMessages').getMessages(BdApi.findModuleByProps('getChannelId').getChannelId())._array.filter(e => e.type === 3);
 					messages.forEach(msg => {
-						this.reloadMessage(msg);
+						this.updateMessage(msg);
 					});
 				}
 
 				getSettingsPanel()
 				{
 					const { Settings } = Api;
-					const set = {
-						generalSettings: {
-							name: 'General',
-							shown: true,
-							settings: {
-								hideAll: { type: 'Switch', name: 'Hide all', tooltip: 'Hide all system messages in every channel', exec: () => { this.reloadAllMessages(); } }
-							}
-						}
-					}
-
 					return Settings.SettingPanel.build(this.saveSettings.bind(this),
-						...Object.values(set).map(group => {
-							return new Settings.SettingGroup(group.name, { shown: group.shown || false }).append(
+						...Object.values(this._settings).map(group => {
+							const options = { collapsible: group.collapsible, shown: group.shown };
+							return new Settings.SettingGroup(group.name, options).append(
 								...Object.keys(group.settings).map(name => {
 									const i = group.settings[name];
-									let obj;
-									const exec = (e) => { this.save(name, e); i.exec(); };
+									const exec = (e) => { this.save(name, e); typeof i.exec === 'function' ? i.exec(e) : null; };
+									const args = [i.name, i.note, i.value || this.settings[name], exec, i.options || {}];
 									switch(i.type) {
-										case 'Switch':
-											obj = new Settings.Switch(i.name, null, this.settings[name], exec, i.options || {});
-											break;
+										case 'Dropdown': case 'RadioGroup':
+											args.splice(3, 0, i.values); break;
 										case 'Slider':
-											obj = new Settings.Slider(i.name, null, i.min, i.max, this.settings[name], exec, i.options || {});
-											break;
-										case 'Textbox':
-											obj = new Settings.Textbox(i.name, null, this.settings[name], exec, i.options || {});
-											break;
+											args.splice(2, 0, i.min); args.splice(3, 0, i.max); break;
+										case 'FilePicker':
+											args.splice(2, 1); break;
 									}
-									if(i.tooltip !== null) new Api.EmulatedTooltip(obj.inputWrapper, i.tooltip, { side: 'left' });
+									const obj = new Settings[i.type](...args);
+									if(typeof i.tooltip === 'string') new Api.EmulatedTooltip(obj.inputWrapper, i.tooltip, { side: 'left' });
 									return obj;
 								})
 							);
