@@ -17,7 +17,7 @@ module.exports = (() =>
 				discord_id: '433027692372426753',
 				github_username: 'sirtalos34'
 			}],
-			version: '1.0.2',
+			version: '1.0.3',
 			description: 'Add sounds that play when you type!',
 			github: 'https://github.com/sirtalos34/BetterDiscordPlugins/blob/main/TypingSounds.plugin.js',
 			github_raw: 'https://raw.githubusercontent.com/sirtalos34/BetterDiscordPlugins/main/TypingSounds.plugin.js'
@@ -63,9 +63,17 @@ module.exports = (() =>
 				constructor() {
 					super();
 					this.save = (m, e) => typeof this.settings[m] !== 'undefined' ? this.settings[m] = e : null;
-					this.defaultSettings = {
-						volume: 1
-					};
+					this.defaultSettings = { volume: 1 };
+					this._settings = {
+						generalSettings: {
+							name: 'General',
+							shown: true,
+							settings: {
+								help: { type: 'Switch', name: 'Click me for help', exec: () => { Api.Modals.showChangelogModal(config.info.name, config.info.version, config.changelog); } },
+								volume: { type: 'Slider', min: 1, max: 9, name: 'Volume', options: { markers: Array.from({ length: 9 }, (_, i) => i + 1), stickToMarkers: true } }
+							}
+						}
+					}
 				}
 
 				onStart()
@@ -99,44 +107,29 @@ module.exports = (() =>
 					};
 				}
 
-				onStop()
-				{
-					document.onkeydown = null;
-				}
+				onStop() { document.onkeydown = null; }
 
 				getSettingsPanel()
 				{
 					const { Settings } = Api;
-					const set = {
-						generalSettings: {
-							name: 'General',
-							shown: true,
-							settings: {
-								help: { type: 'Switch', name: 'Click me for help', tooltip: null, exec: () => { Api.Modals.showChangelogModal(config.info.name, config.info.version, config.changelog); } },
-								volume: { type: 'Slider', min: 1, max: 9, name: 'Volume', tooltip: null, exec: e => {}, options: { markers: Array.from({ length: 9 }, (_, i) => i + 1), stickToMarkers: true } }
-							}
-						}
-					}
-
 					return Settings.SettingPanel.build(this.saveSettings.bind(this),
-						...Object.values(set).map(group => {
-							return new Settings.SettingGroup(group.name, { shown: group.shown || false }).append(
+						...Object.values(this._settings).map(group => {
+							const options = { collapsible: group.collapsible, shown: group.shown };
+							return new Settings.SettingGroup(group.name, options).append(
 								...Object.keys(group.settings).map(name => {
 									const i = group.settings[name];
-									let obj;
-									const exec = (e) => { this.save(name, e); i.exec(); };
+									const exec = (e) => { this.save(name, e); typeof i.exec === 'function' ? i.exec(e) : null; };
+									const args = [i.name, i.note, i.value || this.settings[name], exec, i.options || {}];
 									switch(i.type) {
-										case 'Switch':
-											obj = new Settings.Switch(i.name, null, this.settings[name], exec, i.options || {});
-											break;
+										case 'Dropdown': case 'RadioGroup':
+											args.splice(3, 0, i.values); break;
 										case 'Slider':
-											obj = new Settings.Slider(i.name, null, i.min, i.max, this.settings[name], exec, i.options || {});
-											break;
-										case 'Textbox':
-											obj = new Settings.Textbox(i.name, null, this.settings[name], exec, i.options || {});
-											break;
+											args.splice(2, 0, i.min); args.splice(3, 0, i.max); break;
+										case 'FilePicker':
+											args.splice(2, 1); break;
 									}
-									if(i.tooltip !== null) new Api.EmulatedTooltip(obj.inputWrapper, i.tooltip, { side: 'left' });
+									const obj = new Settings[i.type](...args);
+									if(typeof i.tooltip === 'string') new Api.EmulatedTooltip(obj.inputWrapper, i.tooltip, { side: 'left' });
 									return obj;
 								})
 							);
